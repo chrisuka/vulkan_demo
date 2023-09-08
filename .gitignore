@@ -1,0 +1,10 @@
+**
+!.gitignore
+!README.md
+!LICENSE
+
+!meson.build
+!src/
+!src/*.cpp
+!include/
+!include/*.hpp
