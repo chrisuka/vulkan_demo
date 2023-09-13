@@ -27,6 +27,38 @@ class vkApp {
 		}
 	private:
 		GLFWwindow* window;
+		VkInstance instance;
+
+		// initialize vk info structures
+		// check extensions
+		// assign vk instance
+		void createVkInstance () {
+				VkApplicationInfo appInfo {
+						.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO
+						, .pApplicationName = "Vulkan Demo"
+						, .pEngineName = "No Engine"
+						, .apiVersion = VK_API_VERSION_1_0
+				};
+				appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+				appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+
+				uint32_t glfwExtensionCount = 0;
+				const char** glfwExtensions;
+				glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+				VkInstanceCreateInfo createInfo {
+						.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+						//, .pNext = 
+						//, .flags = 
+						, .pApplicationInfo = &appInfo
+						, .enabledLayerCount = 0
+						, .enabledExtensionCount = glfwExtensionCount
+						, .ppEnabledExtensionNames = glfwExtensions
+				};
+
+				if (vkCreateInstance (&createInfo, nullptr, &instance) != VK_SUCCESS)
+						throw std::runtime_error ("failed to create vulkan instance!");
+		}
 
 		void initWindow () {
 			const uint32_t WIDTH = 800;
@@ -38,12 +70,17 @@ class vkApp {
 			window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 		}
 
-		void initVulkan () {}
+		void initVulkan () {
+			createVkInstance ();
+		}
+
 		void mainLoop () {
 			while (!glfwWindowShouldClose (window))
 					glfwPollEvents ();
 		}
+
 		void cleanup () {
+			vkDestroyInstance (instance, nullptr);
 			glfwDestroyWindow (window);
 			glfwTerminate ();
 		}
